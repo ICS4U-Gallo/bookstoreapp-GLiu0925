@@ -31,31 +31,55 @@ public class BooksController extends Controller{
 
     public Result create() {
         Form<Book> bookForm = formFactory.form(Book.class);
-
         return ok(create.render(bookForm));
     }
 
     // to save book
 
     public Result save() {
-
+        Form<Book> bookForm = formFactory.form(Book.class).bindFromRequest();
+        Book book = bookForm.get();
+        Book.add(book);
+        return redirect(routes.BooksController.index());
     }
 
     public Result edit(Integer id) {
-        return TODO;
+        Book book = Book.findById(id);
+        if(book==null) {
+            return notFound("Book Not Found");
+        }
+        Form<Book> bookForm = formFactory.form(Book.class).fill(book);
+        return ok(edit.render(bookForm));
     }
 
     public Result update() {
-        return TODO;
+        Book book= formFactory.form(Book.class).bindFromRequest().get();
+        Book oldBook = Book.findById(book.id);
+        if(oldBook == null) {
+            return notFound("Book Not Found");
+        }
+        oldBook.title = book.title;
+        oldBook.author = book.author;
+        oldBook.price = book.price;
+        return redirect(routes.BooksController.index());
     }
 
     public Result destroy(Integer id) {
-        return TODO;
+        Book book = Book.findById(id);
+        if(book == null) {
+            return notFound("Book Not Found");
+        }
+        Book.remove(book);
+        return redirect(routes.BooksController.index());
     }
 
     // for book details
 
     public Result show(Integer id) {
-        return TODO;
+        Book book = Book.findById(id);
+        if(book == null) {
+            return notFound("Book not Found");
+        }
+        return ok(show.render(book));
     }
 }
